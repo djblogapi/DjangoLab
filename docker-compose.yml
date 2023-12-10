@@ -1,0 +1,99 @@
+version: "3"
+
+services:
+
+  db:
+    container_name: recognition_db
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=recognition_postgres_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=SecurityPassword
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - db_backups:/backups
+    ports:
+      - "6789:5432"
+
+  rabbitmq:
+    container_name: recognition_rabbitmq
+    image: rabbitmq:3-management-alpine
+    env_file: "./docker/environments"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbit_mq_data:/var/lib/rabbitmq
+
+  django:
+    container_name: recognition_django
+    build:
+      context: .
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./app:/app
+      - ./docker:/docker
+    env_file: "./docker/environments"
+    environment:
+      - WAITING_HOST=db
+      - WAITING_PORT=5432
+    depends_on:
+      - db
+      - rabbitmq
+
+  celery:
+    container_name: recognition_celery
+    build:
+      context: .
+    command: 'celery -A settings worker -l info --concurrency=4 -B'
+    env_file: "./docker/environments"
+    volumes:
+      - ./app:/app
+      - ./docker:/docker
+    links:
+      - db
+      - rabbitmq
+    depends_on:
+      - db
+      - rabbitmq
+
+  flower:
+    container_name: recognition_flower
+    image: mher/flower:0.9.5
+    env_file: "./docker/environments"
+    ports:
+      - 8886:8886
+    depends_on:
+      - celery
+
+#  elasticsearch:
+#    image: elasticsearch:7.10.1
+#    container_name: elasticsearch
+#    ports:
+#      - "9200:9200"
+#    environment:
+#      - cluster.name=docker-cluster
+#      - discovery.type=single-node
+#      - ELASTIC_USERNAME=test
+#      - ELASTIC_PASSWORD=test
+#      - node.name=elasticsearch
+#      - http.cors.enabled=true
+#      - http.cors.allow-origin=*
+#      - cluster.routing.allocation.disk.threshold_enabled=true
+
+  recognition_nginx:
+    image: nginx:latest
+    container_name: recognition_nginx
+    ports:
+      - "8000:8000"
+    depends_on:
+      - django
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+
+volumes:
+  db_data:
+  db_backups:
+  rabbit_mq_data:
+  nginx:
