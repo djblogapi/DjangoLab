@@ -3,6 +3,7 @@ import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from user.managers import UserManager
 
 
 class User(AbstractUser):
@@ -18,13 +19,26 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    objects = UserManager()
+
     class Meta:
         verbose_name = _('User')
         verbose_name_plural = _('Users')
 
     def __str__(self):
-        return f'{self.email}, {self.name}'
+        return f'{self.email}, {self.username}'
 
     def clean(self):
         self.email = self.email.strip().lower()
         super().clean()
+
+
+class File(models.Model):
+    image = models.ImageField(
+        _("image"),
+        upload_to="images",
+        null=True,
+        blank=True,
+    )
+    created = models.DateTimeField(auto_now_add=True)
+

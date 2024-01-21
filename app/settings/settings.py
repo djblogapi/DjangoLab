@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-party
+    "drf_yasg",
     'rest_framework',
 
     # Project apps
@@ -136,11 +137,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'statics/'
+# STATIC_URL = 'statics/'
 ROOT_DIR = os.path.dirname(BASE_DIR)
-STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
+# STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
 
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(ROOT_DIR, "staticfiles")
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(ROOT_DIR, "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
+    "SECURITY_DEFINITIONS": {"api_key": {"type": "apiKey", "name": "Authorization", "in": "header"}},
+    "DOC_EXPANSION": "none",
+    "TAGS_SORTER": "alpha",
+}
