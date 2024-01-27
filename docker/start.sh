@@ -16,4 +16,4 @@ if [[ "${AWS_STORAGE_BUCKET_NAME}" == "" ]]
 
 ./manage.py migrate  --no-input --traceback
 ./manage.py collectstatic --no-input --traceback
-./manage.py runserver 0.0.0.0:8888
+./manage.py runserver 0.0.0.0:8000

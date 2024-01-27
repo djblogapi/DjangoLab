@@ -30,7 +30,7 @@ services:
     build:
       context: .
     ports:
-      - "8888:8888"
+      - "8000:8000"
     volumes:
       - ./app:/app
       - ./docker:/docker
@@ -86,7 +86,7 @@ services:
     image: nginx:latest
     container_name: recognition_nginx
     ports:
-      - "8000:8000"
+      - "80:80"
     depends_on:
       - django
     volumes:
