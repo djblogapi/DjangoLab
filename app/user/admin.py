@@ -1,61 +1,61 @@
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from user.models import User, File
+from user.models import File, User
 
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ('uuid', 'username', 'email', )
+    list_display = ('uuid', 'username', 'email', 'preview')
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "email", 'face',
+                                         'encoding'
+                                         )}),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                ),
+            },
+        ),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+    )
+    readonly_fields = ("uuid", 'encoding')
+
+    def preview(self, obj):
+        if not obj.face:
+            return
+
+        return mark_safe('<img src="http://localhost/media/%s" width="150" height="150" />' % obj.face)
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        from user.utils import encode_img
+        encode_img(obj.pk)
 
 
 class PublicApiClientAdmin(admin.ModelAdmin):
     autocomplete_fields = ("user",)
 
 
-# class TeamMemberInline(admin.TabularInline):
-#     fields = (
-#         "email",
-#         "first_name",
-#         "last_name",
-#         "company_name",
-#         "date_joined",
-#         "last_login",
-#         "role",
-#         "is_registration_finished",
-#     )
-#     readonly_fields = (
-#         "date_joined",
-#         "last_login",
-#         "role",
-#         "is_registration_finished",
-#     )
-#     extra = 0
-#     show_change_link = True
-#
-#     model = User
-#     verbose_name = "Team Member"
-#     verbose_name_plural = "Team Members"
-#
-#     def has_add_permission(self, request, obj):
-#         return False
-#
-#     def has_change_permission(self, request, obj=None):
-#         return False
-#
-#     def has_delete_permission(self, request, obj=None):
-#         return False
-#
-#
 class FileAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "created",
+        "preview",
+        "user"
     )
 
-#
-#
-admin.site.register(User, UserAdmin)
-admin.site.register(File, FileAdmin)
+    def preview(self, obj):
+        return mark_safe('<img src="http://localhost/media/%s" width="150" height="150" />' % obj.image)
 
+
+admin.site.register(User, CustomUserAdmin)
+admin.site.register(File, FileAdmin)
