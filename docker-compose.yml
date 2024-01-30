@@ -15,6 +15,19 @@ services:
     ports:
       - "6789:5432"
 
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: recognition_mosquitto
+    expose:
+      - 1883
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./config:/mosquitto/config
+      - ./data:/mosquitto/data:rw
+      - ./log:/mosquitto/log:rw
+
   rabbitmq:
     container_name: recognition_rabbitmq
     image: rabbitmq:3-management-alpine
@@ -66,21 +79,6 @@ services:
       - 8886:8886
     depends_on:
       - celery
-
-#  elasticsearch:
-#    image: elasticsearch:7.10.1
-#    container_name: elasticsearch
-#    ports:
-#      - "9200:9200"
-#    environment:
-#      - cluster.name=docker-cluster
-#      - discovery.type=single-node
-#      - ELASTIC_USERNAME=test
-#      - ELASTIC_PASSWORD=test
-#      - node.name=elasticsearch
-#      - http.cors.enabled=true
-#      - http.cors.allow-origin=*
-#      - cluster.routing.allocation.disk.threshold_enabled=true
 
   recognition_nginx:
     image: nginx:latest
