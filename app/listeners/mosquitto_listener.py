@@ -5,7 +5,6 @@ import paho.mqtt.client as mqtt
 
 from mongo import MQTT
 
-
 # Set the MQTT broker's address and port
 BROCKER_ADDRESS = "0.0.0.0"
 BROCKER_ADDRESS = "recognition_mosquitto"
@@ -20,12 +19,9 @@ TOPIC = "face_recognition"
 def on_message(client, userdata, msg):
     encoding = json.loads(msg.payload.decode())
     created = datetime.now()
-    # data = json.loads(msg.payload.decode())
     data = {"created": created, "encoding": encoding}
     MQTT(**data).save()
-    print(f"Received message: {encoding}")
-    # print(f"Received message: encoding")
-
+    print("Message saved")
 
 # Create an MQTT client
 client = mqtt.Client()
