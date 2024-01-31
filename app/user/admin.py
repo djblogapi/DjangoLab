@@ -37,8 +37,7 @@ class CustomUserAdmin(UserAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        from user.utils import encode_img
-        encode_img(obj.pk)
+        obj.encode_img()
 
 
 class PublicApiClientAdmin(admin.ModelAdmin):
