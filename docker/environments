@@ -22,3 +22,4 @@ CELERY_BROKER_URL=amqp://rabbit_mg_default_user:SecurityPassword@rabbitmq:5672
 CELERY_RESULT_BACKEND=rpc://rabbit_mg_default_user:SecurityPassword@rabbitmq:5672
 FLOWER_BROKER_API=http://rabbit_mg_default_user:SecurityPassword:15672/api/
 FLOWER_PORT=8886
+MONGODB_URL=mongodb://root:mongoadmin@recognition_mongodb:27017/mongodb?authSource=admin

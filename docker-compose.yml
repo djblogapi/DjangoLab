@@ -24,7 +24,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: mongoadmin
-      MONGO_INITDB_DATABASE: mongodb
+      MONGO_INITDB_DATABASE: recognition
     ports:
       - "27017:27017"
     command:
@@ -70,6 +70,17 @@ services:
     depends_on:
       - db
       - rabbitmq
+
+  mosquitto_listener:
+    build:
+      context: .
+    container_name: recognition_mosquitto_listener
+    command: "python listeners/mosquitto_listener.py"
+    restart: on-failure
+    env_file: "./docker/environments"
+    volumes:
+      - ./app:/app
+      - ./docker:/docker
 
   celery:
     container_name: recognition_celery

@@ -158,3 +158,5 @@ SWAGGER_SETTINGS = {
     "DOC_EXPANSION": "none",
     "TAGS_SORTER": "alpha",
 }
+
+MONGODB_URL = os.getenv('MONGODB_URL')
